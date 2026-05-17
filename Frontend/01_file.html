@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FootballIQ</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --green: #1a7a4a;
+    --green-dark: #0f5c35;
+    --green-light: #e8f5ee;
+    --accent: #f5a623;
+    --text: #1a1a1a;
+    --text-muted: #6b7280;
+    --bg: #ffffff;
+    --bg2: #f4f4f2;
+    --border: rgba(0,0,0,0.12);
+    --radius-md: 8px;
+    --radius-lg: 12px;
+  }
+  body { font-family: system-ui, -apple-system, sans-serif; color: var(--text); background: var(--bg); min-height: 100vh; }
+ 
+  /* NAV */
+  .nav { display: flex; align-items: center; justify-content: space-between; padding: 14px 24px; border-bottom: 0.5px solid var(--border); background: var(--bg); position: sticky; top: 0; z-index: 10; }
+  .nav-logo { display: flex; align-items: center; gap: 8px; font-size: 18px; font-weight: 500; }
+  .logo-icon { width: 32px; height: 32px; background: var(--green); border-radius: 6px; display: flex; align-items: center; justify-content: center; }
+  .logo-icon svg { width: 18px; height: 18px; fill: none; stroke: white; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .nav-links { display: flex; gap: 4px; }
+  .nav-link { padding: 6px 14px; font-size: 13px; color: var(--text-muted); cursor: pointer; border-radius: var(--radius-md); transition: background 0.15s, color 0.15s; border: none; background: none; }
+  .nav-link:hover, .nav-link.active { background: var(--bg2); color: var(--text); }
+  .nav-right { display: flex; align-items: center; gap: 10px; }
+  .btn-login { padding: 6px 16px; font-size: 13px; border: 0.5px solid var(--border); border-radius: var(--radius-md); background: none; color: var(--text); cursor: pointer; }
+  .btn-signup { padding: 6px 16px; font-size: 13px; border: none; border-radius: var(--radius-md); background: var(--green); color: white; cursor: pointer; font-weight: 500; }
+ 
+  /* PAGES */
+  .page { display: none; padding: 32px 24px; max-width: 900px; margin: 0 auto; }
+  .page.active { display: block; }
+ 
+  /* HOME */
+  .hero { text-align: center; padding: 48px 0 40px; }
+  .hero-badge { display: inline-flex; align-items: center; gap: 6px; background: var(--green-light); color: var(--green-dark); font-size: 12px; font-weight: 500; padding: 4px 12px; border-radius: 99px; margin-bottom: 20px; }
+  .hero h1 { font-size: 38px; font-weight: 500; line-height: 1.2; margin-bottom: 14px; }
+  .hero h1 span { color: var(--green); }
+  .hero p { font-size: 16px; color: var(--text-muted); max-width: 480px; margin: 0 auto 28px; line-height: 1.6; }
+  .hero-actions { display: flex; gap: 12px; justify-content: center; }
+  .btn-primary { padding: 10px 24px; background: var(--green); color: white; border: none; border-radius: var(--radius-md); font-size: 14px; font-weight: 500; cursor: pointer; }
+  .btn-secondary { padding: 10px 24px; background: none; color: var(--text); border: 0.5px solid var(--border); border-radius: var(--radius-md); font-size: 14px; cursor: pointer; }
+ 
+  .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 40px 0; }
+  .stat-card { background: var(--bg2); border-radius: var(--radius-lg); padding: 20px; text-align: center; }
+  .stat-num { font-size: 28px; font-weight: 500; color: var(--green); }
+  .stat-label { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+ 
+  .section-title { font-size: 18px; font-weight: 500; margin-bottom: 16px; }
+  .categories { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 40px; }
+  .cat-card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 20px 16px; cursor: pointer; transition: border-color 0.15s, background 0.15s; }
+  .cat-card:hover { border-color: var(--green); background: var(--green-light); }
+  .cat-icon { font-size: 22px; margin-bottom: 8px; color: var(--green); }
+  .cat-name { font-size: 14px; font-weight: 500; }
+  .cat-count { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+ 
+  /* QUIZ */
+  .quiz-header { margin-bottom: 28px; }
+  .quiz-meta { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .badge { display: inline-flex; align-items: center; font-size: 12px; font-weight: 500; padding: 3px 10px; border-radius: 99px; }
+  .badge-green { background: var(--green-light); color: var(--green-dark); }
+  .badge-amber { background: #fef3dc; color: #8a5c00; }
+  .quiz-progress { height: 4px; background: var(--bg2); border-radius: 99px; overflow: hidden; margin-bottom: 8px; }
+  .quiz-progress-fill { height: 100%; background: var(--green); border-radius: 99px; transition: width 0.4s; }
+  .quiz-progress-label { font-size: 12px; color: var(--text-muted); }
+ 
+  .question-card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 24px; margin-bottom: 20px; }
+  .question-text { font-size: 16px; font-weight: 500; line-height: 1.5; margin-bottom: 20px; }
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .option { padding: 12px 16px; border: 0.5px solid var(--border); border-radius: var(--radius-md); cursor: pointer; font-size: 14px; transition: all 0.15s; display: flex; align-items: center; gap: 10px; }
+  .option:hover { border-color: var(--green); background: var(--green-light); }
+  .option.correct { border-color: #1a7a4a; background: #e8f5ee; }
+  .option.wrong { border-color: #c0392b; background: #fdecea; }
+  .option-letter { width: 24px; height: 24px; border-radius: 50%; border: 0.5px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; flex-shrink: 0; }
+ 
+  .quiz-actions { display: flex; justify-content: flex-end; }
+  .btn-next { padding: 10px 24px; background: var(--green); color: white; border: none; border-radius: var(--radius-md); font-size: 14px; font-weight: 500; cursor: pointer; opacity: 0.4; pointer-events: none; transition: opacity 0.2s; }
+  .btn-next.ready { opacity: 1; pointer-events: all; }
+ 
+  /* RESULT */
+  .result-card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 32px; text-align: center; margin-bottom: 20px; }
+  .result-score { font-size: 56px; font-weight: 500; color: var(--green); }
+  .result-label { font-size: 16px; color: var(--text-muted); margin-top: 4px; }
+  .result-breakdown { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 24px 0; }
+  .result-stat { background: var(--bg2); border-radius: var(--radius-md); padding: 16px; }
+  .result-stat-num { font-size: 22px; font-weight: 500; }
+  .result-stat-label { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+ 
+  /* LEADERBOARD */
+  .lb-filters { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+  .lb-filter { padding: 6px 14px; font-size: 13px; border: 0.5px solid var(--border); border-radius: 99px; background: none; cursor: pointer; color: var(--text-muted); }
+  .lb-filter.active { background: var(--green); border-color: var(--green); color: white; }
+  .lb-table { border: 0.5px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+  .lb-row { display: grid; grid-template-columns: 40px 1fr 80px 80px 80px; align-items: center; padding: 12px 16px; border-bottom: 0.5px solid var(--border); font-size: 14px; }
+  .lb-row:last-child { border-bottom: none; }
+  .lb-row.header { background: var(--bg2); font-size: 12px; color: var(--text-muted); font-weight: 500; }
+  .lb-row.me { background: var(--green-light); }
+  .lb-rank { font-weight: 500; color: var(--text-muted); }
+  .lb-rank.top1 { color: #c9a227; }
+  .lb-rank.top2 { color: #888; }
+  .lb-rank.top3 { color: #a0522d; }
+  .lb-name { display: flex; align-items: center; gap: 8px; }
+  .avatar { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500; flex-shrink: 0; }
+  .av-green { background: #e8f5ee; color: #0f5c35; }
+  .av-blue  { background: #e6f1fb; color: #0c447c; }
+  .av-amber { background: #faeeda; color: #633806; }
+  .av-coral { background: #faece7; color: #4a1b0c; }
+  .lb-score { font-weight: 500; }
+  .lb-acc { color: var(--text-muted); }
+</style>
+</head>
+<body>
+ 
+<nav class="nav">
+  <div class="nav-logo">
+    <div class="logo-icon">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3 L9 9 L3 9 L7.5 13.5 L6 19.5 L12 16 L18 19.5 L16.5 13.5 L21 9 L15 9 Z"/></svg>
+    </div>
+    FootballIQ
+  </div>
+  <div class="nav-links">
+    <button class="nav-link active" onclick="showPage('home')">Home</button>
+    <button class="nav-link" onclick="showPage('quiz')">Quiz</button>
+    <button class="nav-link" onclick="showPage('leaderboard')">Leaderboard</button>
+  </div>
+  <div class="nav-right">
+    <button class="btn-login">Log in</button>
+    <button class="btn-signup">Sign up</button>
+  </div>
+</nav>
+ 
+<!-- HOME -->
+<div class="page active" id="page-home">
+  <div class="hero">
+    <div class="hero-badge"><i class="ti ti-bolt"></i> Test your football brain</div>
+    <h1>How well do you <span>know the game?</span></h1>
+    <p>Tactical quizzes, player trivia, and formation challenges. Compete globally and climb the leaderboard.</p>
+    <div class="hero-actions">
+      <button class="btn-primary" onclick="showPage('quiz')">Start a quiz</button>
+      <button class="btn-secondary" onclick="showPage('leaderboard')">View leaderboard</button>
+    </div>
+  </div>
+ 
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-num">2,400+</div><div class="stat-label">Questions</div></div>
+    <div class="stat-card"><div class="stat-num">18k</div><div class="stat-label">Players</div></div>
+    <div class="stat-card"><div class="stat-num">12</div><div class="stat-label">Categories</div></div>
+  </div>
+ 
+  <div class="section-title">Choose a category</div>
+  <div class="categories">
+    <div class="cat-card" onclick="showPage('quiz')">
+      <div class="cat-icon"><i class="ti ti-layout-2"></i></div>
+      <div class="cat-name">Tactics & Formations</div>
+      <div class="cat-count">340 questions</div>
+    </div>
+    <div class="cat-card" onclick="showPage('quiz')">
+      <div class="cat-icon"><i class="ti ti-user"></i></div>
+      <div class="cat-name">Player Trivia</div>
+      <div class="cat-count">820 questions</div>
+    </div>
+    <div class="cat-card" onclick="showPage('quiz')">
+      <div class="cat-icon"><i class="ti ti-trophy"></i></div>
+      <div class="cat-name">Club History</div>
+      <div class="cat-count">560 questions</div>
+    </div>
+    <div class="cat-card" onclick="showPage('quiz')">
+      <div class="cat-icon"><i class="ti ti-flag"></i></div>
+      <div class="cat-name">International</div>
+      <div class="cat-count">410 questions</div>
+    </div>
+  </div>
+</div>
+ 
+<!-- QUIZ -->
+<div class="page" id="page-quiz">
+  <div id="quiz-active">
+    <div class="quiz-header">
+      <div class="quiz-meta">
+        <span class="badge badge-green"><i class="ti ti-layout-2"></i> &nbsp;Tactics</span>
+        <span class="badge badge-amber"><i class="ti ti-clock"></i> &nbsp;Medium</span>
+      </div>
+      <div class="quiz-progress">
+        <div class="quiz-progress-fill" id="progress-fill" style="width:20%;"></div>
+      </div>
+      <div class="quiz-progress-label" id="progress-label">Question 1 of 5</div>
+    </div>
+    <div class="question-card">
+      <div class="question-text" id="q-text"></div>
+      <div class="options" id="options-list"></div>
+    </div>
+    <div class="quiz-actions">
+      <button class="btn-next" id="btn-next" onclick="nextQuestion()">Next <i class="ti ti-arrow-right"></i></button>
+    </div>
+  </div>
+ 
+  <div id="quiz-result" style="display:none;">
+    <div class="result-card">
+      <div class="result-score" id="score-num"></div>
+      <div class="result-label" id="score-label"></div>
+      <div class="result-breakdown">
+        <div class="result-stat"><div class="result-stat-num" id="r-correct" style="color:var(--green)"></div><div class="result-stat-label">Correct</div></div>
+        <div class="result-stat"><div class="result-stat-num" id="r-wrong" style="color:#c0392b"></div><div class="result-stat-label">Wrong</div></div>
+        <div class="result-stat"><div class="result-stat-num" id="r-acc"></div><div class="result-stat-label">Accuracy</div></div>
+      </div>
+      <div style="display:flex;gap:12px;justify-content:center;margin-top:8px;">
+        <button class="btn-primary" onclick="resetQuiz()">Play again</button>
+        <button class="btn-secondary" onclick="showPage('leaderboard')">See leaderboard</button>
+      </div>
+    </div>
+  </div>
+</div>
+ 
+<!-- LEADERBOARD -->
+<div class="page" id="page-leaderboard">
+  <div style="margin-bottom:24px;">
+    <div class="section-title">Global leaderboard</div>
+  </div>
+  <div class="lb-filters">
+    <button class="lb-filter active">All time</button>
+    <button class="lb-filter">This week</button>
+    <button class="lb-filter">Today</button>
+    <button class="lb-filter">Tactics</button>
+    <button class="lb-filter">Player trivia</button>
+  </div>
+  <div class="lb-table">
+    <div class="lb-row header">
+      <div>#</div><div>Player</div><div>Score</div><div>Accuracy</div><div>Quizzes</div>
+    </div>
+    <div class="lb-row">
+      <div class="lb-rank top1">1</div>
+      <div class="lb-name"><div class="avatar av-amber">MK</div>Mohamed K.</div>
+      <div class="lb-score">9,840</div><div class="lb-acc">94%</div><div>128</div>
+    </div>
+    <div class="lb-row">
+      <div class="lb-rank top2">2</div>
+      <div class="lb-name"><div class="avatar av-blue">AS</div>Ana S.</div>
+      <div class="lb-score">9,210</div><div class="lb-acc">91%</div><div>104</div>
+    </div>
+    <div class="lb-row">
+      <div class="lb-rank top3">3</div>
+      <div class="lb-name"><div class="avatar av-coral">PR</div>Paulo R.</div>
+      <div class="lb-score">8,760</div><div class="lb-acc">88%</div><div>117</div>
+    </div>
+    <div class="lb-row">
+      <div class="lb-rank">4</div>
+      <div class="lb-name"><div class="avatar av-green">JL</div>Jae-won L.</div>
+      <div class="lb-score">8,100</div><div class="lb-acc">86%</div><div>95</div>
+    </div>
+    <div class="lb-row">
+      <div class="lb-rank">5</div>
+      <div class="lb-name"><div class="avatar av-blue">FS</div>Fatima S.</div>
+      <div class="lb-score">7,850</div><div class="lb-acc">85%</div><div>89</div>
+    </div>
+    <div class="lb-row me">
+      <div class="lb-rank">42</div>
+      <div class="lb-name"><div class="avatar av-green">OM</div><strong>You</strong></div>
+      <div class="lb-score">2,340</div><div class="lb-acc">72%</div><div>18</div>
+    </div>
+  </div>
+</div>
+ 
+<script>
+  const questions = [
+    {
+      text: "In a 4-3-3 formation, what is the primary responsibility of the defensive midfielder (CDM)?",
+      options: ["To score goals from long range", "To shield the back four and distribute play", "To overlap with the wingers", "To press the opponent's goalkeeper"],
+      correct: 1
+    },
+    {
+      text: "Which pressing trigger most commonly initiates a high press?",
+      options: ["Opponent plays a long ball", "Goalkeeper receives a back pass", "Opponent fullback receives on their weaker foot", "Opponent striker drops deep"],
+      correct: 2
+    },
+    {
+      text: "In positional play (juego de posición), what is the main purpose of 'superiorities'?",
+      options: ["Having more players in a given zone to create passing lanes or overloads", "Playing faster than the opponent", "Keeping possession near the center circle", "Pressing with 3 forwards at all times"],
+      correct: 0
+    },
+    {
+      text: "A team switches from 4-4-2 to 4-2-3-1 in possession. What is the main benefit?",
+      options: ["Stronger defensive shape", "Better aerial dominance", "More creative support for the striker via the #10", "Faster counter-attacking transitions"],
+      correct: 2
+    },
+    {
+      text: "What does 'compactness' refer to in defensive organization?",
+      options: ["Keeping all outfield players within 25–30 metres of each other", "Playing with a high defensive line", "Using a man-marking system exclusively", "Pressing immediately after losing possession"],
+      correct: 0
+    }
+  ];
+ 
+  let current = 0, score = 0, answered = false;
+ 
+  function renderQuestion() {
+    const q = questions[current];
+    document.getElementById('q-text').textContent = q.text;
+    document.getElementById('progress-label').textContent = `Question ${current + 1} of ${questions.length}`;
+    document.getElementById('progress-fill').style.width = `${(current / questions.length) * 100}%`;
+    const list = document.getElementById('options-list');
+    list.innerHTML = '';
+    ['A','B','C','D'].forEach((letter, i) => {
+      const div = document.createElement('div');
+      div.className = 'option';
+      div.innerHTML = `<div class="option-letter">${letter}</div><span>${q.options[i]}</span>`;
+      div.onclick = () => selectOption(i);
+      list.appendChild(div);
+    });
+    answered = false;
+    document.getElementById('btn-next').classList.remove('ready');
+  }
+ 
+  function selectOption(idx) {
+    if (answered) return;
+    answered = true;
+    const correct = questions[current].correct;
+    document.querySelectorAll('.option').forEach((o, i) => {
+      if (i === correct) o.classList.add('correct');
+      else if (i === idx) o.classList.add('wrong');
+    });
+    if (idx === correct) score++;
+    document.getElementById('btn-next').classList.add('ready');
+  }
+ 
+  function nextQuestion() {
+    if (!answered) return;
+    current++;
+    if (current >= questions.length) showResult();
+    else renderQuestion();
+  }
+ 
+  function showResult() {
+    document.getElementById('quiz-active').style.display = 'none';
+    document.getElementById('quiz-result').style.display = 'block';
+    const acc = Math.round((score / questions.length) * 100);
+    const labels = ['Keep practicing!', 'Not bad!', 'Good effort!', 'Great tactical knowledge!', 'Tactical genius!'];
+    document.getElementById('score-num').textContent = `${score}/${questions.length}`;
+    document.getElementById('score-label').textContent = labels[score] || 'Well done!';
+    document.getElementById('r-correct').textContent = score;
+    document.getElementById('r-wrong').textContent = questions.length - score;
+    document.getElementById('r-acc').textContent = acc + '%';
+  }
+ 
+  function resetQuiz() {
+    current = 0; score = 0; answered = false;
+    document.getElementById('quiz-active').style.display = 'block';
+    document.getElementById('quiz-result').style.display = 'none';
+    renderQuestion();
+  }
+ 
+  function showPage(name) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+    document.getElementById('page-' + name).classList.add('active');
+    const map = { home: 0, quiz: 1, leaderboard: 2 };
+    document.querySelectorAll('.nav-link')[map[name]].classList.add('active');
+    if (name === 'quiz') resetQuiz();
+  }
+ 
+  document.querySelectorAll('.lb-filter').forEach(btn => {
+    btn.onclick = () => {
+      document.querySelectorAll('.lb-filter').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    };
+  });
+ 
+  renderQuestion();
+</script>
+</body>
+</html>
